@@ -16,7 +16,6 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 call plug#begin()
 " 插件默认安装目录为 '~/.vim/plugged'
 
-
 " nerdtree侧边栏工具
 Plug 'scrooloose/nerdtree'
 
@@ -65,7 +64,7 @@ set linebreak                       " 防止单词内部折行
 set wrapmargin=5                    " 指定折行处与右边缘空格数
 set autoindent  	                " 打开自动缩进
 set wildmenu    	                " vim命令自动补全
-set paste                           " 在粘贴时不会自动添加"来注释
+set paste                           " 在粘贴时不会自动添加\"来注释
 
 "--------基本设置结束--------------------------"
 "
