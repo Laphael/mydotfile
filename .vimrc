@@ -17,12 +17,14 @@ call plug#begin()
 " 插件默认安装目录为 '~/.vim/plugged'
 
 
-"nerdtree侧边栏工具
+" nerdtree侧边栏工具
 Plug 'scrooloose/nerdtree'
 
-"vim-airline插件，类似于powerline
+" vim-airline插件，类似于powerline
 Plug 'vim-airline/vim-airline'
 
+" vim-gutentags插件，用于自动生成tags
+Plug 'ludovicchabant/vim-gutentags'
 
 call plug#end()
 
@@ -63,5 +65,36 @@ set linebreak                       " 防止单词内部折行
 set wrapmargin=5                    " 指定折行处与右边缘空格数
 set autoindent  	                " 打开自动缩进
 set wildmenu    	                " vim命令自动补全
+set paste                           " 在粘贴时不会自动添加"来注释
 
 "--------基本设置结束--------------------------"
+"
+"
+"--------vim-gutentags配置---------------------"
+" 使用此插件，必须首先安装Universal Ctags
+
+" 设置gutentags结束搜索工程目录的标志,
+" 碰到下面这些文件或者目录名就停止向上一级目录递归搜索
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
+
+" 生成的tags数据文件的名称 
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+" 检测目录 ~/.cache/tags 是否存在，不存在就新建 
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+
+" 配置 ctags 的参数 "
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" 使用 CTRL-W ] 用新窗口打开并查看光标下符号的定义，
+" 使用 CTRL-W } 用 preview 窗口预览光标下符号的定义。
+
+"--------vim-gutentags配置结束--------------------"
+
