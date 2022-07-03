@@ -1,4 +1,4 @@
-" 本配置文件使用vim-plug来管理vim的插件
+" 本配置使用vim-plug来管理vim的插件
 
 "--------自动安装vim-plug----------------"
 
@@ -9,47 +9,6 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
     endif
 
 "--------vim-plug安装结束--------------"
-
-
-"--------安装vim插件--------------"
-
-call plug#begin()
-" 插件默认安装目录为 '~/.vim/plugged'
-
-" nerdtree侧边栏工具
-Plug 'scrooloose/nerdtree'
-
-" vim-airline插件，类似于powerline
-Plug 'vim-airline/vim-airline'
-
-" vim-gutentags插件，用于自动生成tags
-Plug 'ludovicchabant/vim-gutentags'
-
-" AsyncRun异步编译运行插件
-Plug 'skywind3000/asyncrun.vim'
-
-" ALE动态语法检查插件
-Plug 'dense-analysis/ale'
-
-" vim-signify用来在侧边栏显示当前文件和仓库里的文件的对比状态
-" 支持 git/svn/mercurial/cvs 等十多种主流版本管理系统
-Plug 'mhinz/vim-signify'
-
-" YouCompleteMe自动补全插件
-Plug 'valloric/youcompleteme'
-
-" leaderF插件用来查看函数列表
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-
-" auto-pairs用来自动匹配括号
-Plug 'jiangmiao/auto-pairs'
-
-"echodoc用来显示函数的参数提示
-Plug 'Shougo/echodoc.vim'
-
-call plug#end()
-
-"--------vim插件安装结束-------------"
 
 
 "--------基本设置-----------------------------"
@@ -87,12 +46,25 @@ set wrapmargin=5                    " 指定折行处与右边缘空格数
 set autoindent  	                " 打开自动缩进
 set smartindent                     "  智能缩进，每行都和前一行的缩进量相同，还能识别花括号，遇到 { 则取消缩进
 set wildmenu    	                " vim命令自动补全
-"set paste                           " 在粘贴时不会自动添加\"来注释
+"set paste                           " 在粘贴时不会自动添加"来注释
 
 "--------基本设置结束--------------------------"
 
 
-"--------vim-gutentags配置---------------------"
+"--------安装vim插件--------------"
+
+call plug#begin()
+" 插件默认安装目录为 '~/.vim/plugged'
+
+" nerdtree侧边栏工具
+Plug 'scrooloose/nerdtree'
+"---------------------------------------------------------------------
+" vim-airline插件，类似于powerline
+Plug 'vim-airline/vim-airline'
+"---------------------------------------------------------------------
+" vim-gutentags插件，用于自动生成tags
+Plug 'ludovicchabant/vim-gutentags'
+
 " 使用此插件，必须首先安装Universal Ctags
 
 " 设置gutentags结束搜索工程目录的标志
@@ -116,11 +88,9 @@ let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 
 " 使用 CTRL-W ] 用新窗口打开并查看光标下符号的定义，
 " 使用 CTRL-W } 用 preview 窗口预览光标下符号的定义。
-
-"--------vim-gutentags配置结束--------------------"
-
-
-"--------AsyncRun配置开始-------------------"
+"---------------------------------------------------------------------
+" AsyncRun异步编译运行插件
+Plug 'skywind3000/asyncrun.vim'
 
 " 自动打开 quickfix window ，高度为 6
 let g:asyncrun_open = 6
@@ -137,10 +107,10 @@ nnoremap <silent> <F9> :AsyncRun gcc -Wall -O2 "$(VIM_FILEPATH)" -o "$(VIM_FILED
 " 定义F5为运行编译的结果,其中"-cwd=$(VIM_FILEDIR)"的意思是在当前文件所在的目录下运行,后面的运行路径使用了全路径,从而避免了 linux 下面当前路径加 “./” 而 windows 不需要的跨平台问题。
 " 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口。这样你可以一边编辑一边 F9 编译，出错了可以在 quickfix 窗口中按回车直接跳转到错误的位置，编译正确就接着执行。
 nnoremap <silent> <F5> :AsyncRun -raw -cwd=$(VIM_FILEDIR) "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+"---------------------------------------------------------------------
+" ALE动态语法检查插件
+Plug 'dense-analysis/ale'
 
-"--------AsyncRun配置结束-------------------"
-
-"--------ALE配置开始---------------------------"
 " 定义编程语言使用的linter
 let g:ale_linters = {
 \   'c': ['gcc'],
@@ -185,18 +155,17 @@ hi! clear SpellRare
 hi! SpellBad gui=undercurl guisp=red
 hi! SpellCap gui=undercurl guisp=blue
 hi! SpellRare gui=undercurl guisp=magenta
+"---------------------------------------------------------------------
+" vim-signify用来在侧边栏显示当前文件和仓库里的文件的对比状态
+" 支持 git/svn/mercurial/cvs 等十多种主流版本管理系统
+Plug 'mhinz/vim-signify'
 
-
-"--------ALE配置结束-----------------------------"
-
-
-"--------vim-signify配置开始----------------------"
 " 默认的更新时间是4000ms,对于异同步更新来说不太合适,这里改为100ms
 set updatetime=100
-"--------vim-signify配置结束
+"---------------------------------------------------------------------
+" YouCompleteMe自动补全插件
+Plug 'valloric/youcompleteme'
 
-
-"--------ycm配置开始-------------------------------"
 " 不显示ycm的诊断信息,用ale来提供
 let g:ycm_show_diagnostics_ui = 0
 
@@ -236,10 +205,9 @@ let g:ycm_filetype_whitelist = {
 " 禁止ycm对下面3种类型的文件自动补全(本来也不支持）。
 " 这3种文件的补全功能由vim-auto-popmenu来提供
 let g:ycm_filetype_blacklist = {'text':1, 'markdown':1, 'php':1}
-"--------ycm配置结束----------------"
-
-
-"--------LeaderF配置开始-----------------------"
+"---------------------------------------------------------------------
+" leaderF插件用来查看函数列表
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
 let g:Lf_ShortcutF = '<c-p>'
 let g:Lf_ShortcutB = '<m-n>'
@@ -257,11 +225,17 @@ let g:Lf_ShowRelativePath = 0
 let g:Lf_HideHelp = 1
 let g:Lf_StlColorscheme = 'powerline'
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
-"--------LeaderF配置结束-----------------------------"
+"---------------------------------------------------------------------
+" auto-pairs用来自动匹配括号
+Plug 'jiangmiao/auto-pairs'
+"---------------------------------------------------------------------
+"echodoc用来显示函数的参数提示
+Plug 'Shougo/echodoc.vim'
 
-
-"--------echodoc配置开始-------------------------"
 " 关闭底部的提示
 set noshowmode
+"---------------------------------------------------------------------
+call plug#end()
 
-"--------echodoc配置结束---------------------------------"
+"--------vim插件安装结束-------------"
+
