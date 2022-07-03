@@ -1,4 +1,4 @@
-"本配置文件使用vim-plug来管理vim的插件
+" 本配置文件使用vim-plug来管理vim的插件
 
 "--------自动安装vim-plug----------------"
 
@@ -24,6 +24,22 @@ Plug 'vim-airline/vim-airline'
 
 " vim-gutentags插件，用于自动生成tags
 Plug 'ludovicchabant/vim-gutentags'
+
+" AsyncRun异步编译运行插件
+Plug 'skywind3000/asyncrun.vim'
+
+" ALE动态语法检查插件
+Plug 'dense-analysis/ale'
+
+" vim-signify用来在侧边栏显示当前文件和仓库里的文件的对比状态
+" 支持 git/svn/mercurial/cvs 等十多种主流版本管理系统
+Plug 'mhinz/vim-signify'
+
+" YouCompleteMe自动补全插件
+Plug 'valloric/youcompleteme'
+
+" leaderF插件用来查看函数列表
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
 call plug#end()
 
@@ -67,8 +83,8 @@ set wildmenu    	                " vim命令自动补全
 set paste                           " 在粘贴时不会自动添加\"来注释
 
 "--------基本设置结束--------------------------"
-"
-"
+
+
 "--------vim-gutentags配置---------------------"
 " 使用此插件，必须首先安装Universal Ctags
 
@@ -97,3 +113,136 @@ let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 
 "--------vim-gutentags配置结束--------------------"
 
+
+"--------AsyncRun配置开始-------------------"
+
+" 自动打开 quickfix window ，高度为 6
+let g:asyncrun_open = 6
+
+" 任务结束时候响铃提醒
+let g:asyncrun_bell = 1
+
+" 设置 F10 打开/关闭 Quickfix 窗口
+nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
+
+" 单文件的编译和运行,按F9编译,按F5运行
+" 定义F9为编译当前文件
+nnoremap <silent> <F9> :AsyncRun gcc -Wall -O2 "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+" 定义F5为运行编译的结果,其中"-cwd=$(VIM_FILEDIR)"的意思是在当前文件所在的目录下运行,后面的运行路径使用了全路径,从而避免了 linux 下面当前路径加 “./” 而 windows 不需要的跨平台问题。
+" 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口。这样你可以一边编辑一边 F9 编译，出错了可以在 quickfix 窗口中按回车直接跳转到错误的位置，编译正确就接着执行。
+nnoremap <silent> <F5> :AsyncRun -raw -cwd=$(VIM_FILEDIR) "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+
+"--------AsyncRun配置结束-------------------"
+
+"--------ALE配置开始---------------------------"
+" 定义编程语言使用的linter
+let g:ale_linters = {
+\   'c': ['gcc'],
+\   'c++': ['cppcheck'],
+\   'python': ['flake8'],
+\
+\}
+" 除了上面定义的"ale_linters"之外，不开启ale
+let g:ale_linters_explicit = 1
+
+let g:ale_completion_delay = 500
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 500
+
+" 为了避免YoucompleteMe的实例对话框频繁刷新，进行下面两行关于normal和insert模式的定义
+let g:ale_lint_on_text_changed = 'normal'           " normal模式下如果文字改变了,就运行linter
+let g:ale_lint_on_insert_leave = 1					" 离开insert模式时，运行Linter
+
+" 在vim-airline上显示ale的状态信息
+let g:airline#extensions#ale#enabled = 1
+
+" 设置ale的错误信息的输出格式
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] [%severity%] %s'
+
+" 使用quickfix windows代替loclist，暂时感觉没必要
+"let g:ale_set_loclist = 0
+"let g:ale_set_quickfix = 1
+"let g:ale_open_list = 1
+"let g:ale_keep_list_window_open = 0
+
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+let g:ale_sign_error = "\ue009\ue009"
+hi! clear SpellBad
+hi! clear SpellCap
+hi! clear SpellRare
+hi! SpellBad gui=undercurl guisp=red
+hi! SpellCap gui=undercurl guisp=blue
+hi! SpellRare gui=undercurl guisp=magenta
+
+
+"--------ALE配置结束-----------------------------"
+
+
+"--------vim-signify配置开始----------------------"
+" 默认的更新时间是4000ms,对于异同步更新来说不太合适,这里改为100ms
+set updatetime=100
+"--------vim-signify配置结束
+
+" 不显示ycm的诊断信息
+let g:ycm_show_diagnostics_ui = 0
+
+let g:ycm_server_log_level = 'info'
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+
+" 定义触发补全的快捷键是crtl+z
+let g:ycm_key_invoke_completion = '<c-z>'
+
+" 屏蔽ycm自动弹出的函数原型预览窗口
+set completeopt=menu,menuone
+let g:ycm_add_preview_to_completeopt = 0
+
+noremap <c-z> <NOP>
+
+" 只要输入2个字符,ycm就会开启补全
+let g:ycm_semantic_triggers =  {
+           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+           \ 'cs,lua,javascript': ['re!\w{2}'],
+           \ }
+
+" 设置ycm的白名单，不在名单中的文件类型ycm不会去分析
+let g:ycm_filetype_whitelist = { 
+			\ "c":1,
+			\ "cpp":1, 
+			\ "py":1,
+			\ "sh":1,
+			\ "zsh":1,
+			\ }
+
+" 禁止ycm对下面3种类型的文件自动补全(本来也不支持）。
+" 这3种文件的补全功能由vim-auto-popmenu来提供
+let g:ycm_filetype_blacklist = {'text':1, 'markdown':1, 'php':1}
+"--------ycm配置结束----------------"
+
+
+"--------LeaderF配置开始-----------------------"
+
+let g:Lf_ShortcutF = '<c-p>'
+let g:Lf_ShortcutB = '<m-n>'
+noremap <c-n> :LeaderfMru<cr>
+noremap <m-p> :LeaderfFunction!<cr>
+noremap <m-n> :LeaderfBuffer<cr>
+noremap <m-m> :LeaderfTag<cr>
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WindowHeight = 0.30
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+let g:Lf_ShowRelativePath = 0
+let g:Lf_HideHelp = 1
+let g:Lf_StlColorscheme = 'powerline'
+let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
+"--------LeaderF配置结束-----------------------------"
