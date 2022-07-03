@@ -95,8 +95,7 @@ set wildmenu    	                " vim命令自动补全
 "--------vim-gutentags配置---------------------"
 " 使用此插件，必须首先安装Universal Ctags
 
-" 设置gutentags结束搜索工程目录的标志,
-" 碰到下面这些文件或者目录名就停止向上一级目录递归搜索
+" 设置gutentags结束搜索工程目录的标志
 let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
 
 " 生成的tags数据文件的名称 
