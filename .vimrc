@@ -41,6 +41,12 @@ Plug 'valloric/youcompleteme'
 " leaderF插件用来查看函数列表
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
+" auto-pairs用来自动匹配括号
+Plug 'jiangmiao/auto-pairs'
+
+"echodoc用来显示函数的参数提示
+Plug 'Shougo/echodoc.vim'
+
 call plug#end()
 
 "--------vim插件安装结束-------------"
@@ -79,8 +85,9 @@ set wrap                            " 设置自动折行
 set linebreak                       " 防止单词内部折行
 set wrapmargin=5                    " 指定折行处与右边缘空格数
 set autoindent  	                " 打开自动缩进
+set smartindent                     "  智能缩进，每行都和前一行的缩进量相同，还能识别花括号，遇到 { 则取消缩进
 set wildmenu    	                " vim命令自动补全
-set paste                           " 在粘贴时不会自动添加\"来注释
+"set paste                           " 在粘贴时不会自动添加\"来注释
 
 "--------基本设置结束--------------------------"
 
@@ -189,7 +196,9 @@ hi! SpellRare gui=undercurl guisp=magenta
 set updatetime=100
 "--------vim-signify配置结束
 
-" 不显示ycm的诊断信息
+
+"--------ycm配置开始-------------------------------"
+" 不显示ycm的诊断信息,用ale来提供
 let g:ycm_show_diagnostics_ui = 0
 
 let g:ycm_server_log_level = 'info'
@@ -205,6 +214,10 @@ set completeopt=menu,menuone
 let g:ycm_add_preview_to_completeopt = 0
 
 noremap <c-z> <NOP>
+
+" 弹出窗口的配色修改,从默认的粉红改成灰色
+highlight PMenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
+highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black
 
 " 只要输入2个字符,ycm就会开启补全
 let g:ycm_semantic_triggers =  {
@@ -246,3 +259,10 @@ let g:Lf_HideHelp = 1
 let g:Lf_StlColorscheme = 'powerline'
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
 "--------LeaderF配置结束-----------------------------"
+
+
+"--------echodoc配置开始-------------------------"
+" 关闭底部的提示
+set noshowmode
+
+"--------echodoc配置结束---------------------------------"
