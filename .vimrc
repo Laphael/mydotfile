@@ -14,6 +14,7 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 "--------基本设置-----------------------------"
 
 set vb t_vb=                         " 取消vim的响铃
+set t_Co=256                         " 开启vim终端下256颜色显示
 set nocompatible                     " 取消vi兼容
 filetype plugin indent on            " 打开文件类型检测并在runtimepath中加载插件配置与缩进
 if !exists("g:syntax_on") | syntax enable | endif   " 启用代码语法高亮
@@ -235,7 +236,27 @@ Plug 'Shougo/echodoc.vim'
 " 关闭底部的提示
 set noshowmode
 "---------------------------------------------------------------------
+" 修改vim的启动页
+Plug 'mhinz/vim-startify'
+"---------------------------------------------------------------------
+" janah主题
+Plug 'mhinz/vim-janah'
+"---------------------------------------------------------------------
+
+
+"---------------------------------------------------------------------
 call plug#end()
 
 "--------vim插件安装结束-------------"
 
+
+"-------- janah颜色主题设置-----------------"
+"必须写在 call plug#end()之后才能起作用
+
+" 在使用xshell,securecrt等终端模拟器时,janah默认不会设置vim的背景色，这里添加上
+autocmd ColorScheme janah highlight Normal ctermbg=235
+
+" 设置行号栏的背景色,与上面的vim背景色相同
+autocmd ColorScheme janah highlight LineNr ctermbg=235
+colorscheme janah
+"--------janah颜色主题设置结束--------------"
