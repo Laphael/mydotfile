@@ -12,6 +12,12 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 
 
 "--------基本设置-----------------------------"
+"让vim记住上次编辑和浏览的位置
+if has("autocmd")
+      au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+
 
 set vb t_vb=                         " 取消vim的响铃
 set t_Co=256                         " 开启vim终端下256颜色显示
@@ -47,8 +53,10 @@ set wrapmargin=5                    " 指定折行处与右边缘空格数
 set autoindent  	                " 打开自动缩进
 set smartindent                     "  智能缩进，每行都和前一行的缩进量相同，还能识别花括号，遇到 { 则取消缩进
 set wildmenu    	                " vim命令自动补全
-"set paste                           " 在粘贴时不会自动添加"来注释
+set paste                           " 在粘贴时不会自动添加"来注释
 
+" 普通模式下按 p 粘帖的内容就是系统剪切板里的内容了
+"set clipboard=unnamedplus
 "--------基本设置结束--------------------------"
 
 
