@@ -87,6 +87,12 @@ let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
 let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 
+" 排除不想生成tags的文件
+let g:gutentags_ctags_exclude = [
+          \ '.vimrc',
+          \                                 ]
+
+
 " 使用 CTRL-W ] 用新窗口打开并查看光标下符号的定义，
 " 使用 CTRL-W } 用 preview 窗口预览光标下符号的定义。
 "---------------------------------------------------------------------
