@@ -12,17 +12,22 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 
 
 "--------基本设置-----------------------------"
+" 使用分号 ; 作为leader键
+let mapleader = ";"
+
 "让vim记住上次编辑和浏览的位置
 if has("autocmd")
       au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-
-
+set termguicolors                    " 开启turecolor,无需再设置set t_Co=256
 set vb t_vb=                         " 取消vim的响铃
-set t_Co=256                         " 开启vim终端下256颜色显示
 set nocompatible                     " 取消vi兼容
 filetype plugin indent on            " 打开文件类型检测并在runtimepath中加载插件配置与缩进
+
+"语法高亮开启
+"syntax enable 其实是执行了 :source $VIMRUNTIME/syntax/syntax.vim 这个命令, 如果没有设置 VIM 环境变量，Vim 会试图用其它方法找到该路径。syntax enable命令会保持绝大部分你当前的色彩设置。这样，不管在使用此命令的前后，你都可以用  :highlight  命令设置你喜欢的颜色
+"  synatax on 是用Vim的缺省值覆盖你自己的配置
 if !exists("g:syntax_on") | syntax enable | endif   " 启用代码语法高亮
 
 set number                           " 显示行号
@@ -31,78 +36,52 @@ set ruler                            " 右下角显示当前光标位置行列�
 set showmatch                        " 自动高亮对应另一半括号
 set hlsearch                         " 搜索高亮
 set incsearch                        " 每输入一个字符就自动搜索
-set laststatus=1                     " 打开2个及以上buffer时显示底边状态栏
-auto InsertEnter * set cursorline    " 进入Insert模式时高亮光标所在行
-auto InsertLeave * set nocursorline  " 退出Insert模式时取消高亮光标所在行
-
+set ignorecase                       " 搜索时忽略大小写
+set smartcase                        " 打开ignorecase后，搜索只有一个大写字母的词会大小写敏感，其它不敏感:搜索Test时将不匹配test；搜索test时将匹配Test
+set cursorline                       " 高亮显示当前行
 set autochdir                        " 自动切换工作目录
-set scrolloff=5                      " 光标距窗口上下保留5行
+set scrolloff=3                      " 光标距窗口上下保留3行
 set mouse=nv                         " 允许鼠标在normal模式和visual模式下工作
 set backspace=indent,eol,start       " 使用<Backspace>删除
+set encoding=utf-8                   " 让Vim内部所有的内容的编码全部使用utf-8
 let &termencoding=&encoding          " 使终端使用当前编辑文本的编码类型，解决编码造成的显示乱码问题
-set fileencodings=utf-8,gbk,gb2312,gb18030      " 设置写入文件时所支持的文件编码类型
+set fileencodings=utf-8,gb2312,gbk,gb18030      " 设置vim自动侦测文件编码类型的顺序
 
-set expandtab                       " 扩展制表符为空格
+set undofile                        " 保留撤销历史记录。可以在文件关闭后，操作记录保留在一个文件里面继续存在
+set expandtab                       " 自动将 Tab 转为空格
 set tabstop=4   	                " 制表符占空格数
 set softtabstop=4	                " 将连续数量的空格视为一个制表符
-set shiftwidth=4	                " 自动缩进所使用的空格数
-set textwidth=79	                " 编辑器每行字符数
+set shiftwidth=4	                " 在文本上按下>>（增加缩进）、<<（减少缩进）或者==（取消缩进）时每一级的字符数为4。
+set textwidth=80	                " 设置行宽为80
 set wrap                            " 设置自动折行
 set linebreak                       " 防止单词内部折行
-set wrapmargin=5                    " 指定折行处与右边缘空格数
-set autoindent  	                " 打开自动缩进
+set wrapmargin=2                    " 指定折行处与右边缘的空格数
+set autoindent  	                " 按下回车键后，下一行的缩进会自动跟上一行的缩进保持一致。
 set smartindent                     "  智能缩进，每行都和前一行的缩进量相同，还能识别花括号，遇到 { 则取消缩进
-set wildmenu    	                " vim命令自动补全
-set paste                           " 在粘贴时不会自动添加"来注释
+set wildmenu    	                " 命令模式下vim命令自动补全
 
 " 普通模式下按 p 粘帖的内容就是系统剪切板里的内容了
-"set clipboard=unnamedplus
+set clipboard=unnamedplus
 "--------基本设置结束--------------------------"
-
 
 "--------安装vim插件--------------"
 
 call plug#begin()
 " 插件默认安装目录为 '~/.vim/plugged'
+"---------------------------------------------------------------------
 
-" nerdtree侧边栏工具
-Plug 'scrooloose/nerdtree'
+"---------------------------------------------------------------------
+" coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 "---------------------------------------------------------------------
 " vim-airline插件，类似于powerline
 Plug 'vim-airline/vim-airline'
 "---------------------------------------------------------------------
-" vim-gutentags插件，用于自动生成tags
-Plug 'ludovicchabant/vim-gutentags'
-
-" 使用此插件，必须首先安装Universal Ctags
-
-" 设置gutentags结束搜索工程目录的标志
-let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
-
-" 生成的tags数据文件的名称 
-let g:gutentags_ctags_tagfile = '.tags'
-
-" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 
-let s:vim_tags = expand('~/.cache/tags')
-let g:gutentags_cache_dir = s:vim_tags
-" 检测目录 ~/.cache/tags 是否存在，不存在就新建 
-if !isdirectory(s:vim_tags)
-   silent! call mkdir(s:vim_tags, 'p')
-endif
-
-" 配置 ctags 的参数 "
-let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
-let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
-let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-
-" 排除不想生成tags的文件
-let g:gutentags_ctags_exclude = [
-          \ '.vimrc',
-          \                                 ]
-
-
-" 使用 CTRL-W ] 用新窗口打开并查看光标下符号的定义，
-" 使用 CTRL-W } 用 preview 窗口预览光标下符号的定义。
+" 修改vim的启动页
+Plug 'mhinz/vim-startify'
+"---------------------------------------------------------------------
+" gruvbox主题
+Plug 'morhetz/gruvbox'
 "---------------------------------------------------------------------
 " AsyncRun异步编译运行插件
 Plug 'skywind3000/asyncrun.vim'
@@ -123,154 +102,186 @@ nnoremap <silent> <F9> :AsyncRun gcc -Wall -O2 "$(VIM_FILEPATH)" -o "$(VIM_FILED
 " 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口。这样你可以一边编辑一边 F9 编译，出错了可以在 quickfix 窗口中按回车直接跳转到错误的位置，编译正确就接着执行。
 nnoremap <silent> <F5> :AsyncRun -raw -cwd=$(VIM_FILEDIR) "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "---------------------------------------------------------------------
-" ALE动态语法检查插件
-Plug 'dense-analysis/ale'
-
-" 定义编程语言使用的linter
-let g:ale_linters = {
-\   'c': ['gcc'],
-\   'c++': ['cppcheck'],
-\   'python': ['flake8'],
-\
-\}
-" 除了上面定义的"ale_linters"之外，不开启ale
-let g:ale_linters_explicit = 1
-
-let g:ale_completion_delay = 500
-let g:ale_echo_delay = 20
-let g:ale_lint_delay = 500
-
-" 为了避免YoucompleteMe的实例对话框频繁刷新，进行下面两行关于normal和insert模式的定义
-let g:ale_lint_on_text_changed = 'normal'           " normal模式下如果文字改变了,就运行linter
-let g:ale_lint_on_insert_leave = 1					" 离开insert模式时，运行Linter
-
-" 在vim-airline上显示ale的状态信息
-let g:airline#extensions#ale#enabled = 1
-
-" 设置ale的错误信息的输出格式
-let g:ale_echo_msg_error_str = 'E'
-let g:ale_echo_msg_warning_str = 'W'
-let g:ale_echo_msg_format = '[%linter%] [%severity%] %s'
-
-" 使用quickfix windows代替loclist，暂时感觉没必要
-"let g:ale_set_loclist = 0
-"let g:ale_set_quickfix = 1
-"let g:ale_open_list = 1
-"let g:ale_keep_list_window_open = 0
-
-let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
-let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
-let g:ale_c_cppcheck_options = ''
-let g:ale_cpp_cppcheck_options = ''
-
-let g:ale_sign_error = "\ue009\ue009"
-hi! clear SpellBad
-hi! clear SpellCap
-hi! clear SpellRare
-hi! SpellBad gui=undercurl guisp=red
-hi! SpellCap gui=undercurl guisp=blue
-hi! SpellRare gui=undercurl guisp=magenta
-"---------------------------------------------------------------------
-" vim-signify用来在侧边栏显示当前文件和仓库里的文件的对比状态
-" 支持 git/svn/mercurial/cvs 等十多种主流版本管理系统
-Plug 'mhinz/vim-signify'
-
-" 默认的更新时间是4000ms,对于异同步更新来说不太合适,这里改为100ms
-set updatetime=100
-"---------------------------------------------------------------------
-" YouCompleteMe自动补全插件
-Plug 'valloric/youcompleteme'
-
-" 不显示ycm的诊断信息,用ale来提供
-let g:ycm_show_diagnostics_ui = 0
-
-let g:ycm_server_log_level = 'info'
-let g:ycm_min_num_identifier_candidate_chars = 2
-let g:ycm_collect_identifiers_from_comments_and_strings = 1
-let g:ycm_complete_in_strings=1
-
-" 定义触发补全的快捷键是crtl+z
-let g:ycm_key_invoke_completion = '<c-z>'
-
-" 屏蔽ycm自动弹出的函数原型预览窗口
-set completeopt=menu,menuone
-let g:ycm_add_preview_to_completeopt = 0
-
-noremap <c-z> <NOP>
-
-" 弹出窗口的配色修改,从默认的粉红改成灰色
-highlight PMenu ctermfg=0 ctermbg=242 guifg=black guibg=darkgrey
-highlight PMenuSel ctermfg=242 ctermbg=8 guifg=darkgrey guibg=black
-
-" 只要输入2个字符,ycm就会开启补全
-let g:ycm_semantic_triggers =  {
-           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-           \ 'cs,lua,javascript': ['re!\w{2}'],
-           \ }
-
-" 设置ycm的白名单，不在名单中的文件类型ycm不会去分析
-let g:ycm_filetype_whitelist = { 
-			\ "c":1,
-			\ "cpp":1, 
-			\ "py":1,
-			\ "sh":1,
-			\ "zsh":1,
-			\ }
-
-" 禁止ycm对下面3种类型的文件自动补全(本来也不支持）。
-" 这3种文件的补全功能由vim-auto-popmenu来提供
-let g:ycm_filetype_blacklist = {'text':1, 'markdown':1, 'php':1}
-"---------------------------------------------------------------------
-" leaderF插件用来查看函数列表
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-
-let g:Lf_ShortcutF = '<c-p>'
-let g:Lf_ShortcutB = '<m-n>'
-noremap <c-n> :LeaderfMru<cr>
-noremap <m-p> :LeaderfFunction!<cr>
-noremap <m-n> :LeaderfBuffer<cr>
-noremap <m-m> :LeaderfTag<cr>
-let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
-
-let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
-let g:Lf_WorkingDirectoryMode = 'Ac'
-let g:Lf_WindowHeight = 0.30
-let g:Lf_CacheDirectory = expand('~/.vim/cache')
-let g:Lf_ShowRelativePath = 0
-let g:Lf_HideHelp = 1
-let g:Lf_StlColorscheme = 'powerline'
-let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
-"---------------------------------------------------------------------
-" auto-pairs用来自动匹配括号
-Plug 'jiangmiao/auto-pairs'
-"---------------------------------------------------------------------
-"echodoc用来显示函数的参数提示
-Plug 'Shougo/echodoc.vim'
-
-" 关闭底部的提示
-set noshowmode
-"---------------------------------------------------------------------
-" 修改vim的启动页
-Plug 'mhinz/vim-startify'
-"---------------------------------------------------------------------
-" janah主题
-Plug 'mhinz/vim-janah'
-"---------------------------------------------------------------------
-
 
 "---------------------------------------------------------------------
 call plug#end()
 
 "--------vim插件安装结束-------------"
 
+"-------- gruvbox颜色主题设置-----------------"
+let g:gruvbox_italic=1                      " 支持斜体
+let g:gruvbox_contrast_dark='hard'
+set background=dark
+colorscheme gruvbox
+"--------gruvbox颜色主题设置结束--------------"
 
-"-------- janah颜色主题设置-----------------"
-"必须写在 call plug#end()之后才能起作用
+"--------coc.mvim配置开始-------------------"
+" 使用coc.nvim自己的插件管理器来安装coc相关的插件
+let g:coc_global_extensions = ['coc-explorer','coc-vimlsp', 'coc-clangd','coc-json', 'coc-python', 'coc-snippets', 'coc-marketplace']
 
-" 在使用xshell,securecrt等终端模拟器时,janah默认不会设置vim的背景色，这里添加上
-autocmd ColorScheme janah highlight Normal ctermbg=235
+" 使用<leader>e来打开coc-explorer
+nnoremap <leader>e :CocCommand explorer<CR>
 
-" 设置行号栏的背景色,与上面的vim背景色相同
-autocmd ColorScheme janah highlight LineNr ctermbg=235
-colorscheme janah
-"--------janah颜色主题设置结束--------------"
+" TextEdit might fail if hidden is not set.
+set hidden
+
+" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
+" delays and poor user experience.
+set updatetime=100
+
+" Don't pass messages to |ins-completion-menu|.
+set shortmess+=c
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+if has("nvim-0.5.0") || has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ CheckBackspace() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-o> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-o> coc#refresh()
+else
+  inoremap <silent><expr> <c-o> coc#refresh()
+endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+" 使用Leader+h可能会更好,一会修改
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+" 光标放在一个词上，可以高亮其它相同的词，安装coc-highlight才有效果
+" 同类插件是vim-illuminate
+" autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder.
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+" 右键选中一块代码,会提供一些功能选项,
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Run the Code Lens action on the current line.
+nmap <leader>cl  <Plug>(coc-codelens-action)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+" Remap <C-f> and <C-b> for scroll float windows/popups.
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Use CTRL-S for selections ranges.
+" Requires 'textDocument/selectionRange' support of language server.
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer.
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support.
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline.
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Mappings for CoCList
+" Show all diagnostics.
+nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions.
+nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" Show commands.
+nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document.
+nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols.
+nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list.
+nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+"--------coc.nvim配置结束------------------------------"
+
+
+
