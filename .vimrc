@@ -79,6 +79,16 @@ Plug 'vim-airline/vim-airline'
 "---------------------------------------------------------------------
 " 修改vim的启动页
 Plug 'mhinz/vim-startify'
+
+"起始页显示的列表长度
+let g:startify_files_number = 10
+""自动加载session
+let g:startify_session_autoload = 1
+"过滤列表，支持正则表达式
+let g:startify_skiplist = [
+       \ '^/tmp',
+              \ ]
+
 "---------------------------------------------------------------------
 " gruvbox主题
 Plug 'morhetz/gruvbox'
@@ -102,6 +112,20 @@ nnoremap <silent> <F9> :AsyncRun gcc -Wall -O2 "$(VIM_FILEPATH)" -o "$(VIM_FILED
 " 参数 `-raw` 表示输出不用匹配错误检测模板 (errorformat) ，直接原始内容输出到 quickfix 窗口。这样你可以一边编辑一边 F9 编译，出错了可以在 quickfix 窗口中按回车直接跳转到错误的位置，编译正确就接着执行。
 nnoremap <silent> <F5> :AsyncRun -raw -cwd=$(VIM_FILEDIR) "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "---------------------------------------------------------------------
+" leaderF是搜索工具，用来查找本地文件、buffers、MRUS、gtags等
+ Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+" popup mode
+ let g:Lf_WindowPosition = 'popup'
+ let g:Lf_PreviewInPopup = 1
+ let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "Sarasa Mono SC Nerd" }
+ let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+let g:Lf_ShortcutF = "<leader>ff"
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
 
 "---------------------------------------------------------------------
 call plug#end()
