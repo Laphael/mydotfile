@@ -20,48 +20,58 @@ if has("autocmd")
       au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-set termguicolors                    " 开启turecolor,无需再设置set t_Co=256
 set vb t_vb=                         " 取消vim的响铃
 set nocompatible                     " 取消vi兼容
-filetype plugin indent on            " 打开文件类型检测并在runtimepath中加载插件配置与缩进
+set wildmenu    	                " 命令模式下vim命令自动补全
+set autochdir                        " 自动切换工作目录
+set undofile                        " 保留撤销历史记录。把undo操作记录在文件里供后续使用
+set backspace=indent,eol,start       " 使用<Backspace>删除
 
 "语法高亮开启
 "syntax enable 其实是执行了 :source $VIMRUNTIME/syntax/syntax.vim 这个命令, 如果没有设置 VIM 环境变量，Vim 会试图用其它方法找到该路径。syntax enable命令会保持绝大部分你当前的色彩设置。这样，不管在使用此命令的前后，你都可以用  :highlight  命令设置你喜欢的颜色
 "  synatax on 是用Vim的缺省值覆盖你自己的配置
 if !exists("g:syntax_on") | syntax enable | endif   " 启用代码语法高亮
 
+" 显示相关的设置
+set termguicolors                    " 开启turecolor,无需再设置set t_Co=256
 set number                           " 显示行号
 set relativenumber                   " 显示相对行号（相对当前光标所在行）
 set ruler                            " 右下角显示当前光标位置行列号
 set showmatch                        " 自动高亮对应另一半括号
-set hlsearch                         " 搜索高亮
-set incsearch                        " 每输入一个字符就自动搜索
-set ignorecase                       " 搜索时忽略大小写
-set smartcase                        " 打开ignorecase后，搜索只有一个大写字母的词会大小写敏感，其它不敏感:搜索Test时将不匹配test；搜索test时将匹配Test
 set cursorline                       " 高亮显示当前行
-set autochdir                        " 自动切换工作目录
 set scrolloff=3                      " 光标距窗口上下保留3行
 set mouse=nv                         " 允许鼠标在normal模式和visual模式下工作
-set backspace=indent,eol,start       " 使用<Backspace>删除
+
+" 编码相关设置
 set encoding=utf-8                   " 让Vim内部所有的内容的编码全部使用utf-8
 let &termencoding=&encoding          " 使终端使用当前编辑文本的编码类型，解决编码造成的显示乱码问题
 set fileencodings=utf-8,gb2312,gbk,gb18030      " 设置vim自动侦测文件编码类型的顺序
 
-set undofile                        " 保留撤销历史记录。可以在文件关闭后，操作记录保留在一个文件里面继续存在
-set expandtab                       " 自动将 Tab 转为空格
-set tabstop=4   	                " 制表符占空格数
-set softtabstop=4	                " 将连续数量的空格视为一个制表符
-set shiftwidth=4	                " 在文本上按下>>（增加缩进）、<<（减少缩进）或者==（取消缩进）时每一级的字符数为4。
+" 搜索相关设置
+set hlsearch                         " 搜索高亮
+set incsearch                        " 每输入一个字符就自动搜索
+set ignorecase                       " 搜索时忽略大小写
+set smartcase                        " 打开ignorecase后，搜索只有一个大写字母的词会大小写敏感，其它不敏感:搜索Test时将不匹配test；搜索test时将匹配Test
+
+" 折行相关的设置
 set textwidth=80	                " 设置行宽为80
 set wrap                            " 设置自动折行
 set linebreak                       " 防止单词内部折行
 set wrapmargin=2                    " 指定折行处与右边缘的空格数
+
+" 缩进相关的设置
+filetype plugin indent on            " 打开文件类型检测并在runtimepath中加载插件配置与缩进
 set autoindent  	                " 按下回车键后，下一行的缩进会自动跟上一行的缩进保持一致。
 set smartindent                     "  智能缩进，每行都和前一行的缩进量相同，还能识别花括号，遇到 { 则取消缩进
-set wildmenu    	                " 命令模式下vim命令自动补全
 
-" 普通模式下按 p 粘帖的内容就是系统剪切板里的内容了
-set clipboard=unnamedplus
+" Tab键行为
+set expandtab                       " 自动将 Tab 转为空格
+set tabstop=4   	                " 制表符占空格数
+set softtabstop=4	                " 将连续数量的空格视为一个制表符
+set shiftwidth=4	                " 在文本上按下>>（增加缩进）、<<（减少缩进）或者==（取消缩进）时每一级的字符数为4。
+
+set clipboard=unnamedplus           " 系统剪贴板 -> vim
+set clipboard=unnamed               " vim -> 系统剪贴板
 "--------基本设置结束--------------------------"
 
 "--------安装vim插件--------------"
